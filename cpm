@@ -243,7 +243,7 @@ _xbps() {
     esac
 }
 
-pms=$(which nix dnf apt brew pacman xbps-install emerge apk 2>/dev/null)
+pms=$(which nix dnf apt brew pacman port xbps-install emerge apk 2>/dev/null)
 for pm in $pms
 do
 	pm=${pm##*/}
@@ -256,6 +256,7 @@ do
 		xbps-install) phi xbps; _xbps "$@";;
 		nix) phi nix;_nix "$@";;
 		apk) phi apk;_apk "$@";;
+		port phi macports;_macports "$@";;
   *)
 			pem "No valid package manager detected."
 			pem $pm
