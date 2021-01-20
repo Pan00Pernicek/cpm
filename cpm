@@ -243,34 +243,21 @@ _xbps() {
     esac
 }
 
-if   has apk; then
-    # alpine/adelie
-    _apk "$@"
-elif has apt; then
-    # debian/ubuntu
-    _apt "$@"
-elif has emerge; then
-    # gentoo
-    _portage "$@"
-elif has dnf; then
-    # fedora
-    _dnf "$@"
-elif has pacman-key; then
-    # arch/manjaro
-    _pacman "$@"
-elif has port; then
-    # macos
-    _macports "$@"
-elif has xbps-install; then
-    # void
-    _xbps "$@"
-elif has nix; then
-    # nix
-    _nix "$@"
-elif has brew; then
-    pem "Homebrew is not supported [wontfix]"
-    exit 1
-else
-    pem "No valid package manager detected."
-    exit 1
-fi
+pms=$(which nix dnf apt brew pacman xbps-install emerge apk 2>/dev/null)
+for pm in $pms
+do
+	pm=${pm##*/}
+	case $pm in
+		brew) phi brew; pem "Homebrew is not supported [wontfix]";;
+		apt) phi apt; _apt "$@";;
+		dnf) phi dnf; _dnf "$@";;
+		pacman) phi pacman; _pacman "$@";;
+		emerge) phi emerge; _portage "$@";;
+		xbps-install) phi xbps; _xbps "$@";;
+		nix) phi nix;_nix "$@";;
+		apk) phi apk;_apk "$@";;
+  *)
+			pem "No valid package manager detected."
+			pem $pm
+	esac
+done
